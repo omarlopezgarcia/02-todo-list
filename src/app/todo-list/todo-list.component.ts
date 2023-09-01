@@ -24,6 +24,9 @@ export class TodoListComponent {
   ];
 
   addTask() {
+    if (this.newTask.trim() === '') {
+      return;
+    }
     const task = {
       title: this.newTask,
       completed: false,
@@ -54,4 +57,6 @@ export class TodoListComponent {
     this.editableId = null;
     this.updateTask(task, title);
   }
+
+  
 }
