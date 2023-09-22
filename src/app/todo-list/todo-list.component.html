@@ -1,27 +1,31 @@
-<div class="card rounded-3">
+<div class="card rounded-3" style="background-color: #f0f0f0;">
     <div class="card-body p-4">
-
         <!-- Title -->
-        <span class="fs-6">Lista de tareas</span>
-        <p class="mb-2"><span class="h2 me-2">Acuerdos de equipo</span>
-        </p>
-        <p class="text-muted pb-2">04/01/2020 • AS221 - TEI</p>
+        <h2 class="fs-6">Lista de tareas</h2>
+        <p class="mb-2"><strong>Acuerdos de equipo</strong></p>
+        <p class="text-muted pb-2">22/09/2023 • AS221 - TEI</p>
 
-        <!-- Input text -->
-        <div class="input-group mb-4">
+        <!-- Input text para agregar tarea -->
+        <div class="input-group mb-3">
             <input type="text" class="form-control" placeholder="Agregar tarea" aria-label="Agregar tarea"
-                aria-describedby="btn-add-task" [(ngModel)]="newTask">
+                aria-describedby="btn-add-task" [(ngModel)]="newTask" />
             <button class="btn btn-primary" type="button" id="btn-add-task" (click)="addTask()">Agregar</button>
         </div>
 
-        <!-- Task list -->
-        <ul class="list-group mb-0" *ngIf="tasks && tasks.length > 0; else notDataTpl">
-            <li *ngFor="let task of tasks; let i = index"
+        <!-- Input text para búsqueda -->
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Buscar tarea" aria-label="Buscar tarea"
+                aria-describedby="btn-search" [(ngModel)]="searchTerm" (input)="filterTasks()" />
+        </div>
+
+        <!-- Lista de tareas -->
+        <ul class="list-group mb-0" *ngIf="filteredTasks.length > 0; else noDataTpl">
+            <li *ngFor="let task of filteredTasks; let i = index"
                 class="list-group-item d-flex justify-content-between align-items-center border-0 mb-2 rounded"
-                style="background-color: #f4f6f7;">
+                [ngClass]="{'completed-task': task.completed, 'editable-task': editableId === i}">
                 <div>
-                    <input class="form-check-input me-2" type="checkbox" [(ngModel)]="task.completed">
-                    <!-- <span [ngClass]="{'text-decoration-line-through': task.completed}">{{task.title}}</span> -->
+                    <input class="form-check-input me-2" type="checkbox" [(ngModel)]="task.completed"
+                        (change)="updateTask(task, task.title)" />
                     <span *ngIf="editableId !== i; else editableCell"
                         [ngClass]="{'text-decoration-line-through': task.completed}" (dblclick)="startEdit(i)">
                         {{ task.title }}
@@ -41,12 +45,27 @@
             </li>
         </ul>
 
-        <ng-template #notDataTpl>
+        <!-- No Data Template (Resultados de Búsqueda) -->
+        <ng-template #noDataTpl>
             <div class="d-flex flex-column align-items-center">
-                <img src="assets/svgs/undraw_clean_up_re_504g.svg" width="200" height="200" alt="No hay data">
-                <span class="fs-6 text-secondary">No se encontro ninguna tarea</span>
+                <img *ngIf="searchTerm.length > 0; else emptyImage"
+                    src="https://i.kym-cdn.com/photos/images/original/001/840/104/c0d.png"
+                    width="200" height="200" alt="No se encontraron resultados" />
+                <span class="fs-6 text-secondary" *ngIf="searchTerm.length > 0; else emptyText">
+                    No se encontraron resultados para "{{ searchTerm }}"
+                </span>
             </div>
         </ng-template>
 
+        <!-- No Data Template (Imagen Vacia) -->
+        <ng-template #emptyImage>
+            <img src="assets/svgs/undraw_clean_up_re_504g.svg" width="200" height="200"
+                alt="No se encontraron resultados" />
+        </ng-template>
+
+        <!-- No Data Template (Texto Vacío) -->
+        <ng-template #emptyText>
+            <span class="fs-6 text-secondary">No se encontraron tareas</span>
+        </ng-template>
     </div>
 </div>

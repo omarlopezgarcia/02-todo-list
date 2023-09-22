@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 
+interface Task {
+  title: string;
+  completed: boolean;
+}
+
 @Component({
   selector: 'app-todo-list',
   templateUrl: './todo-list.component.html',
@@ -8,7 +13,7 @@ import { Component } from '@angular/core';
 export class TodoListComponent {
   editableId: number | null = null;
   newTask: string = '';
-  tasks: any[] = [
+  tasks: Task[] = [
     {
       title: 'Crear la lista de tareas',
       completed: true,
@@ -22,41 +27,50 @@ export class TodoListComponent {
       completed: false,
     },
   ];
+  
+  searchTerm: string = '';
 
-  addTask() {
-    if (this.newTask.trim() === '') {
-      return;
-    }
-    const task = {
-      title: this.newTask,
+  get filteredTasks(): Task[] {
+    return this.tasks.filter((task) =>
+      task.title.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+
+  addTask(): void {
+    const taskTitle = this.newTask.trim();
+  if (taskTitle) {
+    const task: Task = {
+      title: taskTitle,
       completed: false,
-    }
+    };
     this.tasks.push(task);
     this.newTask = '';
   }
-
-  updateTask(task: any, title: string) {
-    const index = this.tasks.indexOf(task);
-    const updateTask = {
-      title,
-      completed: task.completed
-    }
-    this.tasks[index] = { ...task, ...updateTask };
   }
 
-  deleteTask(task: any) {
+  updateTask(task: Task, title: string): void {
     const index = this.tasks.indexOf(task);
-    this.tasks.splice(index, 1);
+    if (index !== -1) {
+      this.tasks[index].title = title;
+    }
+  }
+
+  deleteTask(task: Task): void {
+    const index = this.tasks.indexOf(task);
+    if (index !== -1) {
+      this.tasks.splice(index, 1);
+    }
   }
 
   startEdit(id: number): void {
     this.editableId = id;
   }
 
-  stopEdit(task: any, title: string): void {
+  stopEdit(task: Task, title: string): void {
     this.editableId = null;
     this.updateTask(task, title);
   }
 
-  
+  filterTasks(): void {
+  }
 }
